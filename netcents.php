@@ -18,12 +18,13 @@ class NetCents extends PaymentModule {
         $this->name = 'netcents';
         $this->tab = 'payments_gateways';
         $this->version = '1.4.0';
-        $this->author = 'NetCents.com';
+        $this->author = 'net-cents.com';
         $this->is_eu_compatible = 1;
         $this->controllers = array('payment', 'redirect', 'callback', 'cancel');
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
+        $this->module_key = 'bbccfdc38891a5f0428161d79b55ce55';
 
         $this->bootstrap = true;
 
@@ -190,6 +191,7 @@ class NetCents extends PaymentModule {
             Configuration::updateValue('NETCENTS_SECRET_KEY', Tools::getValue('NETCENTS_SECRET_KEY'));
             Configuration::updateValue('NETCENTS_TEST', Tools::getValue('NETCENTS_TEST'));
             Configuration::updateValue('NETCENTS_API_KEY', Tools::getValue('NETCENTS_API_KEY'));
+            Configuration::updateValue('NETCENTS_API_URL', Tools::getValue('NETCENTS_API_URL'));
         }
 
         $this->html .= $this->displayConfirmation($this->l('Settings updated'));
@@ -419,6 +421,10 @@ class NetCents extends PaymentModule {
             'NETCENTS_TEST' => Tools::getValue(
                 'NETCENTS_TEST',
                 Configuration::get('NETCENTS_TEST')
+            ),
+            'NETCENTS_API_URL' => Tools::getValue(
+                'NETCENTS_API_URL',
+                Configuration::get('NETCENTS_API_URL')
             ),
             'NETCENTS_WIDGET_ID' => Tools::getValue(
                 'NETCENTS_WIDGET_ID',
