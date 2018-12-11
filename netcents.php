@@ -17,14 +17,13 @@ class NetCents extends PaymentModule {
     {
         $this->name = 'netcents';
         $this->tab = 'payments_gateways';
-        $this->version = '1.4.0';
+        $this->version = '1.0.0';
         $this->author = 'net-cents.com';
         $this->is_eu_compatible = 1;
         $this->controllers = array('payment', 'redirect', 'callback', 'cancel');
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
-        $this->module_key = 'bbccfdc38891a5f0428161d79b55ce55';
 
         $this->bootstrap = true;
 

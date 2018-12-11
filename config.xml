@@ -2,7 +2,7 @@
 <module>
     <name>netcents</name>
     <displayName><![CDATA[Accept Cryptocurrencies with NetCents]]></displayName>
-    <version><![CDATA[1.4.0]]></version>
+    <version><![CDATA[1.0.0]]></version>
     <description><![CDATA[Accept Bitcoin and other cryptocurrencies as a payment method with NetCents]]></description>
     <author><![CDATA[net-cents.com]]></author>
     <tab><![CDATA[payments_gateways]]></tab>

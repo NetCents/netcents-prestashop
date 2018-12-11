@@ -12,7 +12,6 @@
 	  <p>
 	  	<ul>
 	  		<li>Install the NetCents module on PrestaShop</li>
-	  		<li>Visit <a href="https://net-cents.com/sign-up" target="_blank">netcents.com</a> and create an account</li>
 	  		<li>Get your API credentials and copy-paste them to the Configuration page in NetCents module</li>
 	  	</ul>
 	  </p>
