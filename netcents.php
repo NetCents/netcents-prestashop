@@ -289,7 +289,7 @@ class NetCents extends PaymentModule {
         }
 
         $newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-        $newOption->setCallToActionText('Bitcoin, Ethereum, Litecoin or other')
+        $newOption->setCallToActionText('Cryptocurrency via NetCents')
             ->setAction($this->context->link->getModuleLink($this->name, 'redirect', array(), true))
             ->setAdditionalInformation(
                 $this->context->smarty->fetch('module:netcents/views/templates/hook/netcents_intro.tpl')
@@ -352,29 +352,6 @@ class NetCents extends PaymentModule {
                         'name'     => 'NETCENTS_API_URL',
                         'desc'     => $this->l('NetCents API URL'),
                         'required' => true,
-                    ),
-                    array(
-                        'type'     => 'select',
-                        'label'    => $this->l('Test Mode'),
-                        'name'     => 'NETCENTS_TEST',
-                        'desc'     => $this->l(
-                            'To test by creating fake transactions, turn Test Mode "On".'
-                        ),
-                        'required' => true,
-                        'options'  => array(
-                            'query' => array(
-                                array(
-                                    'id_option' => 0,
-                                    'name'      => 'Off',
-                                ),
-                                array(
-                                    'id_option' => 1,
-                                    'name'      => 'On',
-                                ),
-                            ),
-                            'id'    => 'id_option',
-                            'name'  => 'name',
-                        ),
                     ),
                 ),
                 'submit' => array(
