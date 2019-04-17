@@ -1,0 +1,24 @@
+PrestaShop Plugin Setup
+
+Step 1. Log in to your administrative PrestaShop account. 
+
+Step 2. On the navigation bar, click Modules → Modules & Services. 
+
+Step 3. Click Upload a Module. 
+
+You will need to upload the NetCents .zip file that you had downloaded from installation Step 3 above. 
+PrestaShop Step3-4
+
+Step 4. Once uploaded, find NetCents in your installed modules and click Configure → Configure Settings. 
+
+PrestaShopModule
+
+Step 5. Fill in the configuration settings and click save. 
+
+Web Plugin Id: Ecommerce Integration (navigation bar) → Web Plugin Id
+
+Api Keys and Secret: Profile Icon (top right hand corner) → Settings → Api Keys
+
+Api URL: For non white-label merchants, use https://merchant.net-cents.com. White-label merchants should use their own custom API Url.
+
+Congratulations! You are now ready to accept cryptopayments on your PrestaShop site. 
