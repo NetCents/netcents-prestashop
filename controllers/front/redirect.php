@@ -19,7 +19,7 @@ class NetCentsRedirectModuleFrontController extends ModuleFrontController
             Tools::redirect('index.php?controller=order');
         }
 
-        $total = (float)number_format($cart->getOrderTotal(true, 3), 2, '.', '');
+        $total = (float) number_format($cart->getOrderTotal(true, 3), 2, '.', '');
         $currency = Context::getContext()->currency;
 
 
@@ -30,9 +30,9 @@ class NetCentsRedirectModuleFrontController extends ModuleFrontController
 
         $link = new Link();
         $success_url = $link->getPageLink('order-confirmation', null, null, array(
-          'id_cart'     => $cart->id,
-          'id_module'   => $this->module->id,
-          'key'         => $customer->secure_key
+            'id_cart'     => $cart->id,
+            'id_module'   => $this->module->id,
+            'key'         => $customer->secure_key
         ));
 
         $payload = array(
@@ -45,6 +45,7 @@ class NetCentsRedirectModuleFrontController extends ModuleFrontController
             'email' => $customer->email,
             'webhook_url' => $this->context->link->getModuleLink('netcents', 'callback'),
             'merchant_id' => $this->module->api_key,
+            'hosted_payment_id' => $this->module->widget_id,
             'data_encryption' => array(
                 'external_id' => $cart->id,
                 'amount' => $total,
@@ -55,10 +56,12 @@ class NetCentsRedirectModuleFrontController extends ModuleFrontController
                 'email' => $customer->email,
                 'webhook_url' => $this->context->link->getModuleLink('netcents', 'callback'),
                 'merchant_id' => $this->module->api_key,
+                'hosted_payment_id' => $this->module->widget_id,
             )
         );
 
-        $token = $this->getToken($payload)->body->token;
+        $api_url = $this->nc_get_api_url($this->module->api_url);
+        $token = $this->getToken($payload, $api_url)->body->token;
 
         if (isset($token)) {
             $this->module->validateOrder(
@@ -68,25 +71,41 @@ class NetCentsRedirectModuleFrontController extends ModuleFrontController
                 $this->module->displayName,
                 null,
                 null,
-                (int)$currency->id,
+                (int) $currency->id,
                 false,
                 $customer->secure_key
             );
 
-            Tools::redirect($this->module->api_url . "/merchant/widget?data=" . $token . '&widget_id=' . $this->module->widget_id);
+            Tools::redirect($this->module->api_url . "/widget/merchant/widget?data=" . $token);
         } else {
             Tools::redirect('index.php?controller=order&step=3');
         }
     }
 
-    private function getToken($payload) {
+    private function getToken($payload, $api_url)
+    {
         $formHandler =  new \Httpful\Handlers\FormHandler();
         $data = $formHandler->serialize($payload);
 
-        $response =  \Httpful\Request::post($this->module->api_url . '/api/v1/widget/encrypt')
+        $response =  \Httpful\Request::post($api_url . '/widget/v2/encrypt')
             ->body($data)
-            ->addHeader('Authorization', 'Basic ' .  base64_encode( $this->module->api_key. ':' . $this->module->secret_key))
+            ->addHeader('Authorization', 'Basic ' .  base64_encode($this->module->api_key . ':' . $this->module->secret_key))
             ->send();
         return $response;
+    }
+
+    public function nc_get_api_url($host_url)
+    {
+        $parsed = parse_url($host_url);
+        if ($host_url == 'https://merchant.net-cents.com') {
+            $api_url = 'https://api.net-cents.com';
+        } else if ($host_url == 'https://gateway-staging.net-cents.com') {
+            $api_url = 'https://api-staging.net-cents.com';
+        } else if ($host_url == 'https://gateway-test.net-cents.com') {
+            $api_url = 'https://api-test.net-cents.com';
+        } else {
+            $api_url = $parsed['scheme'] . '://' . 'api.' . $parsed['host'];
+        }
+        return $api_url;
     }
 }
