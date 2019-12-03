@@ -87,7 +87,7 @@ class NetCentsRedirectModuleFrontController extends ModuleFrontController
         $formHandler =  new \Httpful\Handlers\FormHandler();
         $data = $formHandler->serialize($payload);
 
-        $response =  \Httpful\Request::post($api_url . '/widget/v2/encrypt')
+        $response =  \Httpful\Request::post($api_url . '/merchant/v2/widget_payments')
             ->body($data)
             ->addHeader('Authorization', 'Basic ' .  base64_encode($this->module->api_key . ':' . $this->module->secret_key))
             ->send();
