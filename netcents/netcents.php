@@ -34,8 +34,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once _PS_MODULE_DIR_ . '/netcents/vendor/netcents/init.php';
 require_once _PS_MODULE_DIR_ . '/netcents/vendor/version.php';
-class NetCents extends PaymentModule
-{
+class NetCents extends PaymentModule {
     private $html = '';
     private $postErrors = array();
 
@@ -54,7 +53,7 @@ class NetCents extends PaymentModule
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
         $this->currencies = true;
         $this->currencies_mode = 'checkbox';
-        $this->module_key = '774a25473b8f5b46e63b20dddce5a7b0';
+
         $this->bootstrap = true;
 
         $config = Configuration::getMultiple(
@@ -193,8 +192,7 @@ class NetCents extends PaymentModule
         );
     }
 
-    private function postValidation()
-    {
+    private function postValidation() {
         if (Tools::isSubmit('btnSubmit')) {
             if (!Tools::getValue('NETCENTS_API_KEY')) {
                 $this->postErrors[] = $this->l('API key is required.');
@@ -372,7 +370,7 @@ class NetCents extends PaymentModule
                     ),
                     array(
                         'type'     => 'text',
-                        'label'    => $this->l('WEB PLUGIN ID'),
+                        'label'    => $this->l('WIDGET ID'),
                         'name'     => 'NETCENTS_WIDGET_ID',
                         'desc'     => $this->l('Your web plugin id'),
                         'required' => true,
@@ -415,8 +413,7 @@ class NetCents extends PaymentModule
         return $helper->generateForm(array($fields_form));
     }
 
-    public function getConfigFieldsValues()
-    {
+    public function getConfigFieldsValues() {
         return array(
             'NETCENTS_API_KEY' => Tools::getValue(
                 'NETCENTS_API_KEY',
@@ -441,8 +438,7 @@ class NetCents extends PaymentModule
         );
     }
 
-    private function stripString($item)
-    {
+    private function stripString($item) {
         return preg_replace('/\s+/', '', $item);
     }
 }

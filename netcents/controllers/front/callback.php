@@ -30,14 +30,15 @@
 
 require_once(_PS_MODULE_DIR_ . '/netcents/vendor/netcents/init.php');
 require_once(_PS_MODULE_DIR_ . '/netcents/vendor/version.php');
+require_once(_PS_MODULE_DIR_ . 'netcents/vendor/autoload.php');
 
 class NetCentsCallbackModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
 
-    public function postProcess()
-    {
-        $data = json_decode(base64_decode(Tools::getValue('data')));
+    public function postProcess() {
+        parent::initContent();
+        $data = json_decode(base64_decode($_POST['data']));
         $cart_id = $data->external_id;
         $order_id = Order::getOrderByCartId($cart_id);
         $order = new Order($order_id);
@@ -59,8 +60,13 @@ class NetCentsCallbackModuleFrontController extends ModuleFrontController
                 throw new Exception($error_message);
             }
 
+            $api_url = $this->nc_get_api_url($this->module->api_url);
+            $transaction = $this->fetchNetCentsTransaction($api_url, $data->transaction_id)->body;
+            if (!isset($transaction)) {
+                return;
+            }
 
-            switch ($data->transaction_status) {
+            switch ($transaction->status) {
                 case 'paid':
                     $order_status = 'PS_OS_PAYMENT';
                     break;
@@ -87,7 +93,7 @@ class NetCentsCallbackModuleFrontController extends ModuleFrontController
                 ));
             } else {
                 $this->context->smarty->assign(array(
-                    'text' => 'Order Status '.$order->status.' not implemented'
+                    'text' => 'Order Status '.$cgOrder->status.' not implemented'
                 ));
             }
         } catch (Exception $e) {
@@ -102,23 +108,45 @@ class NetCentsCallbackModuleFrontController extends ModuleFrontController
         }
     }
 
-    private function checkPayment()
-    {
-        $signature = Tools::getValue('signature');
-        $data = Tools::getValue('data');
-        $signing = Tools::getValue('signing');
+    private function checkPayment() {
+        $signature = $_POST['signature'];
+        $data = $_POST['data'];
+        $signing = $_POST['signing'];
         $exploded_parts = explode(",", $signature);
         $timestamp = explode("=", $exploded_parts[0])[1];
         $signature = explode("=", $exploded_parts[1])[1];
         $hashable_payload = $timestamp . '.' . $data;
         $hash_hmac = hash_hmac("sha256", $hashable_payload, $signing);
-        $timestamp_tolerance = 60;
+        $timestamp_tolerance = 1440;
         $date = new DateTime();
         $current_timestamp = $date->getTimestamp();
         if ($hash_hmac === $signature && ($current_timestamp - $timestamp) / 60 < $timestamp_tolerance) {
             return true;
         }
         return false;
+    }
+
+    private function fetchNetCentsTransaction($api_url, $transaction_id)
+    {
+        $response = \Httpful\Request::get($api_url . '/merchant/v2/transactions/' . $transaction_id)
+            ->addHeader('Authorization', 'Basic ' .  base64_encode($this->module->api_key . ':' . $this->module->secret_key))
+            ->send();
+        return $response;
+    }
+
+    public function nc_get_api_url($host_url)
+    {
+        $parsed = parse_url($host_url);
+        if ($host_url == 'https://merchant.net-cents.com') {
+            $api_url = 'https://api.net-cents.com';
+        } else if ($host_url == 'https://gateway-staging.net-cents.com') {
+            $api_url = 'https://api-staging.net-cents.com';
+        } else if ($host_url == 'https://gateway-test.net-cents.com') {
+            $api_url = 'https://api-test.net-cents.com';
+        } else {
+            $api_url = $parsed['scheme'] . '://' . 'api.' . $parsed['host'];
+        }
+        return $api_url;
     }
 
     private function logError($message, $cart_id)
